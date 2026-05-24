@@ -1,6 +1,7 @@
 // Winter'24
 // Instructor: Diba Mirza
-// Student name: 
+// Student name: Jingyang Liu
+// 2026.5.23
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -38,8 +39,10 @@ int main(int argc, char** argv){
 
     string line, movieName;
     double movieRating;
+    map<string, double> MovieMap;
     // Read each file and store the name and rating
     while (getline (movieFile, line) && parseLine(line, movieName, movieRating)){
+        construct_map(MovieMap, movieName, movieRating);
             // Use std::string movieName and double movieRating
             // to construct your Movie objects
             // cout << movieName << " has rating " << movieRating << endl;
@@ -49,6 +52,9 @@ int main(int argc, char** argv){
     movieFile.close();
 
     if (argc == 2){
+        for (auto const& pair : MovieMap) {
+            cout << pair.first << ", " << pair.second << endl;
+        }
             //print all the movies in ascending alphabetical order of movie names
             return 0;
     }
@@ -67,15 +73,37 @@ int main(int argc, char** argv){
         }
     }
 
+    vector<vector<Movie>> movie_v;
+    for (int i = 0; i < prefixes.size(); i++) {
+        vector<Movie> prefix;
+        store_prefix(prefix, MovieMap, prefixes[i]);
+        order_m(prefix);
+        movie_v.push_back(prefix);
+    }
+
+    for (int i = 0; i < movie_v.size(); i++) {
+        if (movie_v[i].size() == 0) {
+            cout << "No movies found with prefix "<< prefixes[i] << endl;
+        }
+        else {
+            for (int j = 0; j < movie_v[i].size(); j++) {
+                cout << movie_v[i][j].name << ", " << std::fixed << std::setprecision(1) << movie_v[i][j].rating << endl;
+            }
+            cout << endl;
+        }
+    }
     //  For each prefix,
     //  Find all movies that have that prefix and store them in an appropriate data structure
     //  If no movie with that prefix exists print the following message
-    cout << "No movies found with prefix "<<"<replace with prefix>" << endl;
 
     //  For each prefix,
     //  Print the highest rated movie with that prefix if it exists.
-    cout << "Best movie with prefix " << "<replace with prefix>" << " is: " << "replace with movie name" << " with rating " << std::fixed << std::setprecision(1) << "replace with movie rating" << endl;
-
+    for (int i = 0; i < movie_v.size(); i++) {
+        if (movie_v[i].size() == 0) continue;
+        Movie best = movie_v[i][0];
+        cout << "Best movie with prefix " << prefixes[i] << " is: " << best.name << " with rating " << std::fixed << std::setprecision(1) << best.rating << endl;
+    }
+    
     return 0;
 }
 
